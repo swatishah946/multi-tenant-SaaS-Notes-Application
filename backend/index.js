@@ -7,7 +7,7 @@ import authRoutes from "./routes/auth.routes.js";
 import notesRoutes from "./routes/notes.routes.js";
 import tenantRoutes from "./routes/tenant.routes.js";
 import healthRoutes from "./routes/health.routes.js";
-
+import usersRoutes from "./routes/user.routes.js";
 dotenv.config();
 const app = express();
 
@@ -22,6 +22,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/notes", notesRoutes);
 app.use("/api/tenants", tenantRoutes);
 app.use("/health", healthRoutes);
+app.use("/api/users", usersRoutes);
+
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));

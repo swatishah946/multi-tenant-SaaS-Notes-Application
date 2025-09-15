@@ -9,17 +9,28 @@ router.use(tenantMw);
 router.use(auth(["Admin", "Member"]));
 
 // CREATE
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   const tenant = await Tenant.findById(req.user.tenantId);
-  if (tenant.plan === "free") {
-    const count = await Note.countDocuments({ tenantId: tenant._id });
-    if (count >= 3) return res.status(403).json({ error: "Free plan: note limit reached" });
+  
+  // Role restriction: Only Admin and Member can add notes
+  if (!['Admin', 'Member'].includes(req.user.role)) {
+    return res.status(403).json({ error: "Not authorized to add notes" });
   }
+
+  // Subscription gating: Free plan max 3 notes
+  if (tenant.plan === 'free') {
+    const count = await Note.countDocuments({ tenantId: tenant._id });
+    if (count >= 3) {
+      return res.status(403).json({ error: 'Free plan limit reached, upgrade to Pro to add more notes' });
+    }
+  }
+
   const note = await Note.create({
     tenantId: req.user.tenantId,
     userId: req.user.userId,
-    content: req.body.content
+    content: req.body.content,
   });
+
   res.json(note);
 });
 
