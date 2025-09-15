@@ -8,21 +8,18 @@ import notesRoutes from "./routes/notes.routes.js";
 import tenantRoutes from "./routes/tenant.routes.js";
 import healthRoutes from "./routes/health.routes.js";
 import usersRoutes from "./routes/user.routes.js";
+
 dotenv.config();
+
 const app = express();
 
-app.use(cors());
-app.use(express.json());
-import cors from "cors";
-
 const allowedOrigins = [
-  "https://multi-tenant-saas-frontend.vercel.app/",  
+  "https://multi-tenant-saas-frontend.vercel.app",  // no trailing slash here
 ];
 
 app.use(cors({
   origin: function(origin, callback) {
-   
-    if (!origin) return callback(null, true);
+    if (!origin) return callback(null, true);  // allow postman or server-to-server calls
     if (allowedOrigins.indexOf(origin) === -1) {
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
@@ -32,16 +29,17 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization", "x-tenant"],
 }));
 
+app.use(express.json());
+
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(()=>console.log("MongoDB connected!"))
-  .catch(err=>console.log("MongoDB connection error:", err));
+  .then(() => console.log("MongoDB connected!"))
+  .catch(err => console.log("MongoDB connection error:", err));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/notes", notesRoutes);
 app.use("/api/tenants", tenantRoutes);
 app.use("/health", healthRoutes);
 app.use("/api/users", usersRoutes);
-
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
