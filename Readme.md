@@ -6,8 +6,9 @@ This is a full-stack multi-tenant SaaS web application built using the MERN stac
 ---
 ## Deployment
 
-- Frontend URL: [https://multi-tenant-saas-frontend.vercel.app/](Frontend Link)  
-- Backend URL: [https://multi-tenant-saas-notes-application-two.vercel.app/](Backend Link)
+- Frontend: [Live App](https://multi-tenant-saas-frontend.vercel.app/)
+- Backend: [Live API](https://multi-tenant-saas-notes-application-two.vercel.app/)
+
 
 ---
 
