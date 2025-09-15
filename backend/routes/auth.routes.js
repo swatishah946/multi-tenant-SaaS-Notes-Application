@@ -25,3 +25,4 @@ router.post("/login", tenantMw, async (req, res) => {
   }
 });
 
+export default router;
