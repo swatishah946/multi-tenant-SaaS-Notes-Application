@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/authcontext.jsx";
-import  COLORS  from "../theme.js";
+import { COLORS } from "../theme.js";
 
 const UpgradeButton = () => {
   const { auth } = useContext(AuthContext); // auth.tenant gives 'acme' or 'globex'

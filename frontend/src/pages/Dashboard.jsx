@@ -9,7 +9,7 @@ import UpgradeButton from "../components/UpgradeButton.jsx";
 import UserInvite from "../components/UserInvite.jsx";
 
 // Theme colors
-import  COLORS  from "../theme.js";
+import { COLORS } from "../theme.js";
 
 const Dashboard = () => {
   const { auth, logout } = useContext(AuthContext);

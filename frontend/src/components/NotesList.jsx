@@ -1,5 +1,5 @@
 import React from "react";
-import  COLORS  from "../theme.js";
+import { COLORS } from "../theme.js";
 
 const NotesList = ({ notes, onDelete }) => {
   return (
