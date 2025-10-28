@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";   // Import useNavigate
 import { AuthContext } from "../context/authcontext.jsx";
-import { COLORS } from "../theme.js";
+import  COLORS  from "../theme.js";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
