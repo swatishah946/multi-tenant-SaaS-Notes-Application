@@ -8,18 +8,20 @@ import notesRoutes from "./routes/notes.routes.js";
 import tenantRoutes from "./routes/tenant.routes.js";
 import healthRoutes from "./routes/health.routes.js";
 import usersRoutes from "./routes/user.routes.js";
+import { errorHandler } from "./middleware/errorHandler.js";
+
 
 dotenv.config();
 
 const app = express();
 
 const allowedOrigins = [
-  "https://multi-tenant-saas-frontend.vercel.app",  // no trailing slash here
+  "https://multi-tenant-saas-frontend.vercel.app",  
 ];
 
 app.use(cors({
   origin: function(origin, callback) {
-    if (!origin) return callback(null, true);  // allow postman or server-to-server calls
+    if (!origin) return callback(null, true); 
     if (allowedOrigins.indexOf(origin) === -1) {
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
@@ -41,5 +43,6 @@ app.use("/api/tenants", tenantRoutes);
 app.use("/health", healthRoutes);
 app.use("/api/users", usersRoutes);
 
+app.use(errorHandler);
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));

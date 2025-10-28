@@ -1,12 +1,19 @@
 import React from "react";
-import { COLORS } from "../theme.js";
+import COLORS from "../theme.js";
 
 const NotesList = ({ notes, onDelete }) => {
+  if (!notes.length) {
+    return (
+      <div style={{ marginTop: "20px", color: COLORS.navy }}>
+        No notes yet. Add your first note!
+      </div>
+    );
+  }
   return (
     <ul style={{ padding: 0, marginTop: "15px" }}>
       {notes.map((note) => (
         <li
-          key={note._id}
+          key={note._id || note.id}
           style={{
             background: COLORS.beige,
             color: COLORS.navy,

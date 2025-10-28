@@ -40,3 +40,11 @@
 .read-the-docs {
   color: #888;
 }
+body {
+  background-color: #f9f9f9;
+  font-family: 'Avenir', 'Helvetica', 'Arial', sans-serif;
+}
+input, button {
+  font-size: 1em;
+  font-family: inherit;
+}

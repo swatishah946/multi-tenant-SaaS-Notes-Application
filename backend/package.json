@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-   "type": "module",
- "scripts": {
+  "type": "module",
+  "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
@@ -16,6 +16,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
+    "express-validator": "^7.3.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.1"
   }

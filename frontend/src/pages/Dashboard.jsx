@@ -1,36 +1,37 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-
-// Context & Components
-import { AuthContext } from "../context/authcontext.jsx";
+import AuthContext from "../context/authcontext.jsx";
 import NotesList from "../components/NotesList.jsx";
 import NoteForm from "../components/NoteForm.jsx";
 import UpgradeButton from "../components/UpgradeButton.jsx";
 import UserInvite from "../components/UserInvite.jsx";
-
-// Theme colors
-import { COLORS } from "../theme.js";
+import COLORS from "../theme.js";
 
 const Dashboard = () => {
   const { auth, logout } = useContext(AuthContext);
   const [notes, setNotes] = useState([]);
   const [error, setError] = useState(null);
   const [noteLimitReached, setNoteLimitReached] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // axios instance for notes API
   const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL + "/notes",
+    baseURL: import.meta.env.VITE_API_BASEURL + "/notes",
     headers: { Authorization: `Bearer ${auth.token}` },
   });
 
-  // Fetch notes for tenant
   const fetchNotes = async () => {
+    setLoading(true);
     try {
-      const res = await api.get("/", { headers: { "x-tenant": auth.tenant } });
+      const res = await api.get("", {
+        headers: { "x-tenant": auth.tenant },
+      });
       setNotes(res.data);
       setNoteLimitReached(false);
+      setError(null);
     } catch (err) {
       setError("Failed to fetch notes");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,91 +39,66 @@ const Dashboard = () => {
     if (auth.token) fetchNotes();
   }, [auth.token]);
 
-  // Add note handler — disabled if limit reached
   const addNote = async (content) => {
-    setError(null);
+    setLoading(true);
     try {
-      await api.post("/", { content }, { headers: { "x-tenant": auth.tenant } });
+      await api.post(
+        "",
+        { content },
+        { headers: { "x-tenant": auth.tenant } }
+      );
       fetchNotes();
     } catch (err) {
-      if (err.response?.status === 403) {
-        setNoteLimitReached(true);
-        setError(err.response?.data?.error); // show limit reached message
-      } else {
-        setError("Failed to add note");
-      }
+      setError(err.response?.data?.error || "Could not add note");
+      setNoteLimitReached(true);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Delete note handler
   const deleteNote = async (id) => {
-    setError(null);
+    setLoading(true);
     try {
-      await api.delete(`/${id}`, { headers: { "x-tenant": auth.tenant } });
+      await api.delete(`/${id}`, {
+        headers: { "x-tenant": auth.tenant },
+      });
       fetchNotes();
-    } catch {
-      setError("Failed to delete note");
+    } catch (err) {
+      setError("Could not delete note");
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (!auth.token) return <p>Please login to access your notes.</p>;
+  // For counting notes and plan status
+  const noteLimit =
+    auth.plan === "free" ? `Notes: ${notes.length}/3 (Free)` : `Notes: ${notes.length}+ (Pro)`;
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: COLORS.offwhite,
-        paddingBottom: "44px",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "400px",
-          margin: "32px auto",
-          background: COLORS.beige,
-          borderRadius: "10px",
-          boxShadow: "0 2px 10px rgba(35, 55, 71, 0.08)",
-          padding: "2rem",
-        }}
-      >
-        <h2 style={{ color: COLORS.navy, marginBottom: "1rem" }}>
-          Dashboard{" "}
-          <span style={{ color: COLORS.slate, fontSize: "1rem" }}>
-            ({auth.tenant}, {auth.role})
-          </span>
-          <button
-            onClick={logout}
-            style={{
-              float: "right",
-              background: COLORS.navy,
-              color: COLORS.offwhite,
-              borderRadius: "4px",
-              border: "none",
-              padding: "4px 12px",
-              fontWeight: "bold",
-              cursor: "pointer",
-              fontSize: "0.9rem",
-            }}
-          >
-            Logout
-          </button>
-        </h2>
-
-        {/* Note creation form (disabled if free plan limit reached) */}
-        <NoteForm onAdd={addNote} disabled={noteLimitReached} />
-
-        {/* Show upgrade button only if limit reached and user is admin */}
-        {noteLimitReached && auth.role === "Admin" && <UpgradeButton />}
-
-        {/* Show user invite form only for Admins */}
-        {auth.role === "Admin" && <UserInvite />}
-
-        {/* Show error messages */}
-        {error && <p style={{ color: "crimson", marginTop: "10px" }}>{error}</p>}
-
-        {/* List of notes */}
-        <NotesList notes={notes} onDelete={deleteNote} />
+    <div style={{ background: COLORS.offwhite, minHeight: "100vh", padding: "30px" }}>
+      <div style={{ marginBottom: "20px", padding: "10px", background: COLORS.beige, borderRadius: "8px" }}>
+        <strong>{auth.tenant}</strong> | {auth.user.email} ({auth.role}) <br />
+        <span>Plan: <b>{auth.plan}</b></span>
+        <span style={{ marginLeft: "20px" }}>{noteLimit}</span>
       </div>
+      <UpgradeButton />
+      {auth.role === "Admin" && <UserInvite />}
+      {error && (
+        <div style={{ color: COLORS.red, background: COLORS.beige, margin: "8px 0", padding: "8px", borderRadius: "6px" }}>
+          {error}
+        </div>
+      )}
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        <>
+          <NoteForm onAdd={addNote} disabled={noteLimitReached} />
+          <NotesList notes={notes} onDelete={deleteNote} />
+        </>
+      )}
+      <button onClick={logout} style={{ marginTop: "20px", background: COLORS.slate, color: COLORS.offwhite }}>
+        Logout
+      </button>
     </div>
   );
 };

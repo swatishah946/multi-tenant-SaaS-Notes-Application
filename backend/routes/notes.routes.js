@@ -3,36 +3,48 @@ import Note from "../models/note.model.js";
 import Tenant from "../models/tenant.model.js";
 import auth from "../middleware/auth.middleware.js";
 import tenantMw from "../middleware/tenant.middleware.js";
+import { createNoteValidator } from '../validators/noteValidator.js';
+import { validationResult } from 'express-validator';
 
 const router = express.Router();
 router.use(tenantMw);
 router.use(auth(["Admin", "Member"]));
 
 // CREATE
-router.post('/', async (req, res) => {
-  const tenant = await Tenant.findById(req.user.tenantId);
-  
-  // Role restriction: Only Admin and Member can add notes
-  if (!['Admin', 'Member'].includes(req.user.role)) {
-    return res.status(403).json({ error: "Not authorized to add notes" });
-  }
-
-  // Subscription gating: Free plan max 3 notes
-  if (tenant.plan === 'free') {
-    const count = await Note.countDocuments({ tenantId: tenant._id });
-    if (count >= 3) {
-      return res.status(403).json({ error: 'Free plan limit reached, upgrade to Pro to add more notes' });
+router.post(
+  '/', 
+  createNoteValidator,
+  async (req, res) => {
+    // Request body validation
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
+
+    const tenant = await Tenant.findById(req.user.tenantId);
+
+    // Role restriction: Only Admin and Member can add notes
+    if (!['Admin', 'Member'].includes(req.user.role)) {
+      return res.status(403).json({ error: "Not authorized to add notes" });
+    }
+
+    // Subscription gating: Free plan max 3 notes
+    if (tenant.plan === 'free') {
+      const count = await Note.countDocuments({ tenantId: tenant._id });
+      if (count >= 3) {
+        return res.status(403).json({ error: 'Free plan limit reached, upgrade to Pro to add more notes' });
+      }
+    }
+
+    const note = await Note.create({
+      tenantId: req.user.tenantId,
+      userId: req.user.userId,
+      content: req.body.content,
+    });
+
+    res.json(note);
   }
-
-  const note = await Note.create({
-    tenantId: req.user.tenantId,
-    userId: req.user.userId,
-    content: req.body.content,
-  });
-
-  res.json(note);
-});
+);
 
 // READ ALL
 router.get("/", async (req, res) => {
