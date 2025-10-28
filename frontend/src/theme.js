@@ -1,8 +1,8 @@
 
 
 export const COLORS = {
-  navy: "#233747",
-  slate: "#50657d",
-  beige: "#d6ccc2",
-  offwhite: "#f5f3f0",
+  navy: "#461220",
+  slate: "#8c2f39",
+  beige: "#fcb9b2",
+  offwhite: "#fed0bb",
 };

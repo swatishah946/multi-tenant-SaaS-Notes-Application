@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/authcontext.jsx";
-import { COLORS } from "../theme.js";
+import COLORS  from "../theme.js";
 
 const UserInvite = () => {
   const { auth } = useContext(AuthContext);

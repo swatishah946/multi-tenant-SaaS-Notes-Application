@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { COLORS } from "../theme.js";
+import  COLORS  from "../theme.js";
 
 const NoteForm = ({ onAdd, disabled }) => {
   const [content, setContent] = useState("");
