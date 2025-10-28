@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import COLORS from "../theme.js";
+import { COLORS } from "../theme.js";
 
 const NoteForm = ({ onAdd, disabled }) => {
   const [content, setContent] = useState("");
@@ -7,7 +7,7 @@ const NoteForm = ({ onAdd, disabled }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!content.trim()) return;
-    onAdd(content.trim());
+    onAdd(content);
     setContent("");
   };
 
@@ -24,7 +24,7 @@ const NoteForm = ({ onAdd, disabled }) => {
           marginRight: "10px",
           padding: "8px",
           borderRadius: "5px",
-          border: `1px solid ${COLORS.slate}`,
+          border: "1px solid " + COLORS.slate,
           background: COLORS.offwhite,
           color: COLORS.navy,
         }}
@@ -39,7 +39,6 @@ const NoteForm = ({ onAdd, disabled }) => {
           color: disabled ? COLORS.navy : COLORS.offwhite,
           border: "none",
           fontWeight: "bold",
-          transition: "background 0.2s",
         }}
       >
         Add Note
